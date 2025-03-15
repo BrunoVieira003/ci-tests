@@ -1,20 +1,23 @@
-name: Build Test
+name: Build project
 
 on:
   push:
     branches:
       - dev
-
-concurrency:
- group: ${{ github.workflow }}-${{ github.ref }}
- cancel-in-progress: true
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'release/*'
+      - 'hotfix/*'
 
 jobs:
   build:
+    name: Build Project
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -22,9 +25,6 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      
-      - name: Sync package-lock.json
-        run: npm install --package-lock-only
 
       - name: Install dependencies
         run: npm ci
