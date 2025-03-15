@@ -40,6 +40,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ghcr.io/brunovieira003/$REPO_NAME:latest .
+          docker tag ghcr.io/brunovieira003/$REPO_NAME:latest ghcr.io/brunovieira003/$REPO_NAME:$VERSION
 
       - name: Push Docker Image
         run: |
