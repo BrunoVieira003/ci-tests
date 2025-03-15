@@ -1,3 +1,3 @@
 # ci-tests
 
-this is supposed to be a release
+this is supposed to be a release fr
