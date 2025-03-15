@@ -1,11 +1,11 @@
 name: Release Docker Image
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
-    paths-ignore:
-      - '**.md'
 
 jobs:
   build-and-push:
@@ -25,6 +25,16 @@ jobs:
 
       - name: Extract Repository Name
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+      
+      - name: Extract release version
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=$(echo "$BRANCH_NAME" | sed -nE 's/release\/([0-9]+\.[0-9]+\.[0-9]+)/\1/p')
+          if [[ -z "$VERSION" ]]; then
+            echo "Error: Could not extract version from branch name."
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build Docker Image
         run: |
@@ -32,4 +42,5 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/brunovieira003/$REPO_NAME:latest
+          docker push ghcr.io/${{ env.REPO_NAME }}:${{ env.VERSION }}
+          docker push ghcr.io/${{ env.REPO_NAME }}:latest
